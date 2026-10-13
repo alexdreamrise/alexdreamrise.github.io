@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Alex · alexdreamrise</title>
-<meta name="description" content="Подорожі, гори, море. 13 країн. TikTok, Instagram, Threads.">
+<meta name="description" content="Подорожі, гори, море — 12 країн. TikTok, Instagram, Threads.">
 <meta property="og:title" content="Alex · alexdreamrise">
 <meta property="og:image" content="media/hero.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,6 +53,7 @@
   .hint { color:var(--muted); font-size:14px; margin:-6px 0 12px }
   .map { border-radius:18px; overflow:hidden; background:#111317; border:1px solid var(--line) }
   .map svg { display:block; width:100%; touch-action:pan-y }
+  .map { background:radial-gradient(ellipse at 50% 40%, #121a2b 0%, #06070b 70%) !important }
   .map .land { fill:#24272d; stroke:#0b0c0e; stroke-width:.5 }
   .map .been { fill:#5a4128 }
   .map .pin { fill:var(--accent); cursor:pointer }
@@ -91,14 +92,6 @@
   html[data-theme=light] .map text { fill:#14161a }
   html[data-theme=light] .map circle:first-of-type { fill:#e9e4da }
   html[data-theme=light] .count .num small, html[data-theme=light] .road small { color:var(--muted) }
-  .months { display:flex; align-items:flex-start; gap:8px; overflow-x:auto; padding:4px 2px 12px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch }
-  .months::-webkit-scrollbar { height:4px } .months::-webkit-scrollbar-thumb { background:var(--line); border-radius:4px }
-  .mo { flex:none; width:64px; scroll-snap-align:start; border-radius:14px; padding:10px 4px; text-align:center; background:var(--glass); border:1px solid var(--line); cursor:pointer; transition:transform .2s }
-  .mo:active { transform:scale(.95) }
-  .mo b { display:block; font-size:12px; font-weight:600 } .mo small { display:block; font-size:10px; color:var(--muted); margin-bottom:6px }
-  .mo i { display:inline-block; font-style:normal; font-size:17px; line-height:1.3; margin:0 1px }
-  .mo.now { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset }
-  .mo.empty i { color:var(--muted); font-size:14px }
   footer { text-align:center; color:rgba(255,255,255,.4); font-size:12px; padding:0 20px 34px }
   @media (prefers-reduced-motion:reduce) { *{ animation:none !important; opacity:1 !important; transform:none !important } }
 </style>
@@ -110,7 +103,7 @@
     <div class="wrap">
       <div class="tag"><span class="dot"></span><span id="now">📍 Зараз: Україна</span></div>
       <h1 id="name">Alex</h1>
-      <p class="sub">Подорожі, гори, море. <b>Красиві місця такими, як вони є.</b></p>
+      <p class="sub">Подорожі, гори, море — <b>красиві місця такими, як вони є</b>.</p>
       <nav class="links">
         <a class="btn main" href="https://www.tiktok.com/@alexdreamrise" target="_blank" rel="noopener" style="animation-delay:1.1s">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6Z"/></svg>
@@ -132,11 +125,6 @@
     <div class="num"><span id="cnt">0</span><small>країн</small></div>
     <div class="flags" id="flags"></div>
     <p class="hint c">Натисни на прапор, і глобус повернеться до країни</p>
-  </section>
-  <section class="cal">
-    <h2>Календар поїздок</h2>
-    <p class="hint">Де я був щомісяця (за геомітками відео). Натисни місяць</p>
-    <div class="months" id="months"></div>
   </section>
   <section>
     <h2>Кадри з дороги</h2>
@@ -160,7 +148,7 @@
   </section>
   <section>
     <h2>Де я був</h2>
-    <p class="hint">Крути глобус пальцем. Натисни на точку, щоб побачити кадр звідти</p>
+    <p class="hint">Тягни, щоб крутити. Двома пальцями наближай. Натисни точку, і відкриється кадр</p>
     <div class="map"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Глобус поїздок"></svg></div>
   </section>
   <div class="full" id="full" hidden><div class="bar top"></div><video playsinline loop muted></video><div class="bar bot"><span id="fcap"></span></div><button aria-label="Закрити">✕</button></div>
@@ -185,16 +173,6 @@
       const ic = c === 0 ? '☀️' : c <= 3 ? '⛅' : c <= 48 ? '🌫️' : c <= 67 ? '🌧️' : c <= 77 ? '❄️' : c <= 82 ? '🌦️' : '⛈️';
       document.getElementById('now').textContent = `📍 Зараз: ${NOW.name} · ${ic} ${t > 0 ? '+' : ''}${t}°`;
     }).catch(() => {});
-  // мінікалендар поїздок (з GPS відео в Photos, 2025-01 … 2026-10)
-  const CAL = [['2025-01','🇩🇪🇵🇱🇺🇦'],['2025-02','🇪🇬🇩🇪'],['2025-03','🇩🇪🇪🇬'],['2025-04','🇩🇪'],['2025-05','🇩🇪🇺🇦'],['2025-06','🇭🇷🇺🇦🇵🇱🇧🇦'],
-    ['2025-07','🇪🇸🇭🇷🇩🇪🇵🇱🇮🇹🇸🇮🇺🇦🇭🇺'],['2025-08','🇩🇪🇺🇦🇨🇿'],['2025-09','🇬🇷🇪🇸🇵🇹🇩🇪🇧🇦'],['2025-10','🇮🇨🇪🇸'],['2025-11',''],['2025-12','🇪🇸🇩🇪'],
-    ['2026-01','🇪🇸'],['2026-02','🇺🇦🇵🇱'],['2026-03','🇩🇪🇪🇸🇺🇦🇵🇱'],['2026-04','🇮🇨🇪🇸'],['2026-05','🇪🇸🇩🇪🇨🇿🇮🇹'],['2026-06','🇩🇪'],
-    ['2026-07','🇺🇦'],['2026-08','🇺🇦'],['2026-09','🇺🇦'],['2026-10','🇺🇦']];
-  const MN = ['січ','лют','бер','кві','тра','чер','лип','сер','вер','жов','лис','гру'];
-  const mEl = document.getElementById('months');
-  mEl.innerHTML = CAL.map(([ym, fl], k) => { const [y, m] = ym.split('-'); const fs = [...new Intl.Segmenter().segment(fl)].map(x => x.segment);
-    return `<div class="mo${k === CAL.length - 1 ? ' now' : ''}${fs.length ? '' : ' empty'}" data-f="${fs[0] || ''}"><b>${MN[+m - 1]}</b><small>${y}</small>${fs.length ? fs.map(f => `<i>${f}</i>`).join('') : '<i>·</i>'}</div>`; }).join('');
-  mEl.scrollLeft = mEl.scrollWidth;
   // літери імені "піднімаються" по черзі
   const h = document.getElementById('name');
   h.innerHTML = [...h.textContent].map((c, i) => `<span style="animation-delay:${0.35 + i * 0.08}s">${c}</span>`).join('');
@@ -261,45 +239,64 @@
     { n:'Україна', c:[28.7,50.3] }, { n:'Спліт', c:[16.4,43.5] },
     { n:'Рієка', c:[14.5,45.3] }, { n:'Боснія', c:[17.5,43.2] },
   ];
+  // 3D-глобус: стоїть на місці; тягни, щоб крутити; щипок/колесо, щоб наблизити; подвійний дотик = ближче.
+  // Маршрут поїздок лініями по черзі, живий день/ніч (тінь там, де зараз ніч), сітка і світіння атмосфери.
+  const ROUTE = [[28.7,50.3],[13.7,51.0],[33.8,27.2],[13.7,51.0],[16.4,43.5],[-0.38,39.47],[0.19,38.73],[24.1,35.6],[-8.67,37.09],[-15.6,28.0],[-0.38,39.47],[-16.8,28.3],[14.8,50.3],[28.7,50.3]];
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()).then(w => {
-    const svg = d3.select('#map'), R = 185;
-    const proj = d3.geoOrthographic().scale(R).translate([200, 200]).rotate([-10, -38]).clipAngle(90);
+    const svg = d3.select('#map'), R0 = 180;
+    const proj = d3.geoOrthographic().scale(R0).translate([200, 200]).rotate([-12, -38]).clipAngle(90);
     const path = d3.geoPath(proj);
-    svg.append('circle').attr('cx', 200).attr('cy', 200).attr('r', R).attr('fill', '#0e1320').attr('stroke', 'rgba(255,255,255,.18)');
+    const defs = svg.append('defs');
+    const glow = defs.append('radialGradient').attr('id', 'atm');
+    glow.append('stop').attr('offset', '82%').attr('stop-color', '#5aa9ff').attr('stop-opacity', .35);
+    glow.append('stop').attr('offset', '100%').attr('stop-color', '#5aa9ff').attr('stop-opacity', 0);
+    const shade = defs.append('radialGradient').attr('id', 'sea').attr('cx', '38%').attr('cy', '32%');
+    shade.append('stop').attr('offset', '0%').attr('stop-color', '#1d2a44');
+    shade.append('stop').attr('offset', '100%').attr('stop-color', '#070a12');
+    const atm = svg.append('circle').attr('cx', 200).attr('cy', 200).attr('fill', 'url(#atm)');
+    const sea = svg.append('path').datum({ type: 'Sphere' }).attr('fill', 'url(#sea)');
+    const grat = svg.append('path').datum(d3.geoGraticule10()).attr('fill', 'none').attr('stroke', 'rgba(255,255,255,.07)');
     const land = svg.append('g').selectAll('path').data(topojson.feature(w, w.objects.countries).features).join('path')
       .attr('class', d => 'land' + (BEEN.includes(d.id) ? ' been' : ''));
+    // ніч: коло 90° навколо точки, протилежної сонцю
+    function antisun() { const n = new Date(), d = (Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) - Date.UTC(n.getUTCFullYear(), 0, 0)) / 864e5;
+      const dec = -23.44 * Math.cos(2 * Math.PI * (d + 10) / 365), lon = -((n.getUTCHours() + n.getUTCMinutes() / 60) / 24 * 360 - 180);
+      return [lon + 180, -dec]; }
+    const night = svg.append('path').attr('fill', 'rgba(0,0,10,.45)').style('pointer-events', 'none');
+    const nightGeo = d3.geoCircle().center(antisun()).radius(90)();
+    const route = svg.append('path').datum({ type: 'LineString', coordinates: ROUTE }).attr('fill', 'none')
+      .attr('stroke', 'var(--accent)').attr('stroke-width', 1.4).attr('stroke-dasharray', '4 5').attr('opacity', .9);
+    let dash = 0; d3.timer(() => { dash -= .3; route.attr('stroke-dashoffset', dash); });
     const g = svg.append('g').selectAll('g').data(PINS).join('g').style('cursor', d => d.v ? 'pointer' : 'default')
       .on('click', (e, d) => { if (d.v) openFull(d.v, d.n); });
     g.append('circle').attr('class', 'ring').attr('r', 4).style('display', d => d.v ? null : 'none');
-    g.append('circle').attr('class', 'pin').attr('r', d => d.v ? 4 : 2.5).style('opacity', d => d.v ? 1 : .8);
-    const lab = g.append('text').attr('x', 9).attr('y', 4).text(d => d.v ? d.n : '').style('opacity', 0).style('transition', 'opacity .3s');
+    g.append('circle').attr('class', 'pin').attr('r', d => d.v ? 4 : 2.5);
+    const lab = g.append('text').attr('x', 8).attr('y', 4).text(d => d.n).style('font-size', d => d.v ? '10px' : '8px');
     function draw() {
-      land.attr('d', path);
+      const k = proj.scale() / R0;
+      atm.attr('r', proj.scale() * 1.12);
+      sea.attr('d', path); grat.attr('d', path); land.attr('d', path); night.attr('d', path(nightGeo)); route.attr('d', path);
       const ctr = [-proj.rotate()[0], -proj.rotate()[1]];
-      g.attr('transform', d => { const p = proj(d.c); return `translate(${p})`; })
-       .style('display', d => d3.geoDistance(d.c, ctr) > Math.PI / 2 - .05 ? 'none' : null);
-      let best = null, bd = 9; PINS.forEach(p => { if (!p.v) return; const k = d3.geoDistance(p.c, ctr); if (k < bd) { bd = k; best = p; } });
-      lab.style('opacity', d => d === best && bd < .75 ? 1 : 0);
+      g.attr('transform', d => `translate(${proj(d.c)})`).style('display', d => d3.geoDistance(d.c, ctr) > Math.PI / 2 - .05 ? 'none' : null);
+      // підписи: при наближенні видно всі, здалеку лише точки з кадрами
+      lab.style('opacity', d => k > 2.2 || (d.v && k > 1.3) ? 1 : 0);
     }
     draw();
-    let spin = true;
+    // тягнути = крутити, колесо/щипок = наближати
+    svg.call(d3.drag().on('drag', e => { const r = proj.rotate(), s = 70 / proj.scale();
+      proj.rotate([r[0] + e.dx * s * 2.2, Math.max(-80, Math.min(80, r[1] - e.dy * s * 2.2))]); draw(); }));
+    svg.call(d3.zoom().scaleExtent([1, 9]).filter(e => e.type === 'wheel' || e.type === 'dblclick' || (e.touches && e.touches.length === 2))
+      .on('zoom', e => { proj.scale(R0 * e.transform.k); draw(); }));
     const feats = topojson.feature(w, w.objects.countries).features;
     function goTo(id) {
       let c; if (id === 'IC') c = [-15.6, 28.0]; else { const f = feats.find(x => x.id === id); if (!f) return; c = d3.geoCentroid(f); }
-      spin = false; document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const r0 = proj.rotate(), r1 = [-c[0], -c[1]], ir = d3.interpolate(r0, r1);
-      d3.transition().duration(1400).tween('rot', () => t => { proj.rotate(ir(t)); draw(); }).on('end', () => setTimeout(() => spin = true, 5000));
+      document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const ir = d3.interpolate(proj.rotate(), [-c[0], -c[1]]), is = d3.interpolate(proj.scale(), Math.max(proj.scale(), R0 * 2.4));
+      d3.transition().duration(1400).tween('rot', () => t => { proj.rotate(ir(t)); proj.scale(is(t)); draw(); });
     }
     document.querySelectorAll('#flags span').forEach(sp => sp.onclick = () => goTo(sp.dataset.id));
-    const FL2ID = Object.fromEntries(FLAGS.map(f => [f[0], f[1]]));
-    document.querySelectorAll('.mo').forEach(m => m.onclick = () => { const id = FL2ID[m.dataset.f]; if (id) goTo(id); });
-    d3.timer(() => { if (spin) { const r = proj.rotate(); proj.rotate([r[0] + .2, r[1]]); draw(); } });
-    svg.call(d3.drag().on('start', () => spin = false).on('drag', e => {
-      const r = proj.rotate(); proj.rotate([r[0] + e.dx * .4, Math.max(-70, Math.min(70, r[1] - e.dy * .4))]); draw();
-    }).on('end', () => setTimeout(() => spin = true, 4000)));
   }).catch(() => document.querySelector('.map').style.display = 'none');
 </script>
 
-<script data-goatcounter="https://alexdreamrise.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
