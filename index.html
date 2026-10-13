@@ -52,6 +52,7 @@
   .hint { color:var(--muted); font-size:14px; margin:-6px 0 12px }
   .map { border-radius:18px; overflow:hidden; background:#111317; border:1px solid var(--line) }
   .map svg { display:block; width:100%; touch-action:pan-y }
+  .map { background:radial-gradient(ellipse at 50% 40%, #121a2b 0%, #06070b 70%) !important }
   .map .land { fill:#24272d; stroke:#0b0c0e; stroke-width:.5 }
   .map .been { fill:#5a4128 }
   .map .pin { fill:var(--accent); cursor:pointer }
@@ -146,7 +147,7 @@
   </section>
   <section>
     <h2>Де я був</h2>
-    <p class="hint">Крути глобус пальцем. Натисни на точку, щоб побачити кадр звідти</p>
+    <p class="hint">Тягни, щоб крутити. Двома пальцями наближай. Натисни точку, і відкриється кадр</p>
     <div class="map"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Глобус поїздок"></svg></div>
   </section>
   <div class="full" id="full" hidden><div class="bar top"></div><video playsinline loop muted></video><div class="bar bot"><span id="fcap"></span></div><button aria-label="Закрити">✕</button></div>
@@ -237,42 +238,60 @@
     { n:'Україна', c:[28.7,50.3] }, { n:'Спліт', c:[16.4,43.5] },
     { n:'Рієка', c:[14.5,45.3] }, { n:'Боснія', c:[17.5,43.2] },
   ];
+  // 3D-глобус: стоїть на місці; тягни, щоб крутити; щипок/колесо, щоб наблизити. Живий день/ніч, сітка, світіння.
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()).then(w => {
-    const svg = d3.select('#map'), R = 185;
-    const proj = d3.geoOrthographic().scale(R).translate([200, 200]).rotate([-10, -38]).clipAngle(90);
+    const svg = d3.select('#map'), R0 = 180;
+    const proj = d3.geoOrthographic().scale(R0).translate([200, 200]).rotate([-12, -38]).clipAngle(90);
     const path = d3.geoPath(proj);
-    svg.append('circle').attr('cx', 200).attr('cy', 200).attr('r', R).attr('fill', '#0e1320').attr('stroke', 'rgba(255,255,255,.18)');
+    const defs = svg.append('defs');
+    const glow = defs.append('radialGradient').attr('id', 'atm');
+    glow.append('stop').attr('offset', '82%').attr('stop-color', '#5aa9ff').attr('stop-opacity', .35);
+    glow.append('stop').attr('offset', '100%').attr('stop-color', '#5aa9ff').attr('stop-opacity', 0);
+    const shade = defs.append('radialGradient').attr('id', 'sea').attr('cx', '38%').attr('cy', '32%');
+    shade.append('stop').attr('offset', '0%').attr('stop-color', '#1d2a44');
+    shade.append('stop').attr('offset', '100%').attr('stop-color', '#070a12');
+    const atm = svg.append('circle').attr('cx', 200).attr('cy', 200).attr('fill', 'url(#atm)');
+    const sea = svg.append('path').datum({ type: 'Sphere' }).attr('fill', 'url(#sea)');
+    const grat = svg.append('path').datum(d3.geoGraticule10()).attr('fill', 'none').attr('stroke', 'rgba(255,255,255,.07)');
     const land = svg.append('g').selectAll('path').data(topojson.feature(w, w.objects.countries).features).join('path')
       .attr('class', d => 'land' + (BEEN.includes(d.id) ? ' been' : ''));
+    // ніч: коло 90° навколо точки, протилежної сонцю
+    function antisun() { const n = new Date(), d = (Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) - Date.UTC(n.getUTCFullYear(), 0, 0)) / 864e5;
+      const dec = -23.44 * Math.cos(2 * Math.PI * (d + 10) / 365), lon = -((n.getUTCHours() + n.getUTCMinutes() / 60) / 24 * 360 - 180);
+      return [lon + 180, -dec]; }
+    const night = svg.append('path').attr('fill', 'rgba(0,0,10,.45)').style('pointer-events', 'none');
+    const nightGeo = d3.geoCircle().center(antisun()).radius(90)();
     const g = svg.append('g').selectAll('g').data(PINS).join('g').style('cursor', d => d.v ? 'pointer' : 'default')
       .on('click', (e, d) => { if (d.v) openFull(d.v, d.n); });
     g.append('circle').attr('class', 'ring').attr('r', 4).style('display', d => d.v ? null : 'none');
-    g.append('circle').attr('class', 'pin').attr('r', d => d.v ? 4 : 2.5).style('opacity', d => d.v ? 1 : .8);
-    const lab = g.append('text').attr('x', 9).attr('y', 4).text(d => d.v ? d.n : '').style('opacity', 0).style('transition', 'opacity .3s');
+    g.append('circle').attr('class', 'pin').attr('r', d => d.v ? 4 : 2.5);
+    const lab = g.append('text').attr('x', 8).attr('y', 4).text(d => d.n).style('font-size', d => d.v ? '10px' : '8px');
     function draw() {
-      land.attr('d', path);
+      const k = proj.scale() / R0;
+      atm.attr('r', proj.scale() * 1.12);
+      sea.attr('d', path); grat.attr('d', path); land.attr('d', path); night.attr('d', path(nightGeo));
       const ctr = [-proj.rotate()[0], -proj.rotate()[1]];
-      g.attr('transform', d => { const p = proj(d.c); return `translate(${p})`; })
-       .style('display', d => d3.geoDistance(d.c, ctr) > Math.PI / 2 - .05 ? 'none' : null);
-      let best = null, bd = 9; PINS.forEach(p => { if (!p.v) return; const k = d3.geoDistance(p.c, ctr); if (k < bd) { bd = k; best = p; } });
-      lab.style('opacity', d => d === best && bd < .75 ? 1 : 0);
+      g.attr('transform', d => `translate(${proj(d.c)})`).style('display', d => d3.geoDistance(d.c, ctr) > Math.PI / 2 - .05 ? 'none' : null);
+      // підписи: при наближенні видно всі, здалеку лише точки з кадрами
+      lab.style('opacity', d => k > 2.2 || (d.v && k > 1.3) ? 1 : 0);
     }
     draw();
-    let spin = true;
+    // тягнути = крутити, колесо/щипок = наближати
+    svg.call(d3.drag().on('drag', e => { const r = proj.rotate(), s = 70 / proj.scale();
+      proj.rotate([r[0] + e.dx * s * 2.2, Math.max(-80, Math.min(80, r[1] - e.dy * s * 2.2))]); draw(); }));
+    svg.call(d3.zoom().scaleExtent([1, 9]).filter(e => e.type === 'wheel' || e.type === 'dblclick' || (e.touches && e.touches.length === 2))
+      .on('zoom', e => { proj.scale(R0 * e.transform.k); draw(); }));
     const feats = topojson.feature(w, w.objects.countries).features;
     function goTo(id) {
       let c; if (id === 'IC') c = [-15.6, 28.0]; else { const f = feats.find(x => x.id === id); if (!f) return; c = d3.geoCentroid(f); }
-      spin = false; document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const r0 = proj.rotate(), r1 = [-c[0], -c[1]], ir = d3.interpolate(r0, r1);
-      d3.transition().duration(1400).tween('rot', () => t => { proj.rotate(ir(t)); draw(); }).on('end', () => setTimeout(() => spin = true, 5000));
+      document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const ir = d3.interpolate(proj.rotate(), [-c[0], -c[1]]), is = d3.interpolate(proj.scale(), Math.max(proj.scale(), R0 * 2.4));
+      d3.transition().duration(1400).tween('rot', () => t => { proj.rotate(ir(t)); proj.scale(is(t)); draw(); });
     }
     document.querySelectorAll('#flags span').forEach(sp => sp.onclick = () => goTo(sp.dataset.id));
-    d3.timer(() => { if (spin) { const r = proj.rotate(); proj.rotate([r[0] + .2, r[1]]); draw(); } });
-    svg.call(d3.drag().on('start', () => spin = false).on('drag', e => {
-      const r = proj.rotate(); proj.rotate([r[0] + e.dx * .4, Math.max(-70, Math.min(70, r[1] - e.dy * .4))]); draw();
-    }).on('end', () => setTimeout(() => spin = true, 4000)));
   }).catch(() => document.querySelector('.map').style.display = 'none');
 </script>
 
+<script data-goatcounter="https://alexdreamrise.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
