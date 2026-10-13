@@ -38,7 +38,37 @@
   section { max-width:460px; margin:0 auto; padding:34px 20px 50px }
   h2 { font-family:Unbounded,Inter,sans-serif; font-weight:500; font-size:18px; margin-bottom:14px }
   .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px }
+  .grid figure { position:relative; margin:0 }
   .grid video { width:100%; aspect-ratio:9/16; object-fit:cover; border-radius:14px; background:#1a1b1e; display:block }
+  .grid figcaption { position:absolute; left:8px; bottom:8px; font-size:11px; font-weight:600; padding:3px 8px; border-radius:20px; background:rgba(0,0,0,.45); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px) }
+  .grid figure { cursor:pointer; opacity:0; transform:translateY(24px); transition:opacity .7s, transform .7s }
+  .grid figure.in { opacity:1; transform:none }
+  .count { text-align:center; padding-bottom:10px }
+  .count .num { font-family:Unbounded,Inter,sans-serif; font-weight:800; font-size:72px; line-height:1 }
+  .count .num small { display:block; font-family:Inter,sans-serif; font-weight:400; font-size:15px; color:var(--muted); margin-top:6px }
+  .flags { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:16px; font-size:28px }
+  .flags span { opacity:0; transform:translateY(20px) scale(.6); transition:opacity .5s, transform .5s cubic-bezier(.2,.8,.2,1.4) }
+  .flags span.in { opacity:1; transform:none }
+  .hint { color:var(--muted); font-size:14px; margin:-6px 0 12px }
+  .map { border-radius:18px; overflow:hidden; background:#111317; border:1px solid var(--line) }
+  .map svg { display:block; width:100% }
+  .map .land { fill:#24272d; stroke:#0b0c0e; stroke-width:.5 }
+  .map .been { fill:#5a4128 }
+  .map .pin { fill:var(--accent); cursor:pointer }
+  .map .ring { fill:none; stroke:var(--accent); animation:ring 2.2s infinite; transform-box:fill-box; transform-origin:center }
+  @keyframes ring { from { opacity:.9; transform:scale(1) } to { opacity:0; transform:scale(3) } }
+  .map text { fill:#fff; font-size:10px; font-weight:600; pointer-events:none }
+  .brands .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px }
+  .brands .stats div { padding:14px; border-radius:16px; background:var(--glass); border:1px solid var(--line) }
+  .brands b { font-family:Unbounded,Inter,sans-serif; font-size:24px; display:block }
+  .brands span { color:var(--muted); font-size:13px }
+  .sub2 { color:var(--muted); font-size:15px; line-height:1.45; margin-bottom:14px }
+  .brands .btn { opacity:1; animation:none; justify-content:center }
+  .full { position:fixed; inset:0; z-index:9; background:rgba(0,0,0,.92); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px }
+  .full[hidden] { display:none }
+  .full video { max-height:80svh; max-width:100%; border-radius:18px }
+  .full p { margin-top:12px; font-weight:600 }
+  .full button { position:absolute; top:16px; right:16px; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--glass); color:#fff; font-size:18px }
   footer { text-align:center; color:rgba(255,255,255,.4); font-size:12px; padding:0 20px 34px }
   @media (prefers-reduced-motion:reduce) { *{ animation:none !important; opacity:1 !important; transform:none !important } }
 </style>
@@ -48,7 +78,7 @@
     <img class="poster" src="media/hero.jpg" alt="">
     <video src="media/hero.mp4" poster="media/hero.jpg" autoplay muted loop playsinline></video>
     <div class="wrap">
-      <div class="tag"><span class="dot"></span>12 країн · і далі</div>
+      <div class="tag"><span class="dot"></span>📍 Зараз: Україна</div>
       <h1 id="name">Alex</h1>
       <p class="sub">Подорожі, гори, море — <b>красиві місця такими, як вони є</b>.</p>
       <nav class="links">
@@ -67,19 +97,107 @@
       </nav>
     </div>
   </header>
+  <section class="count">
+    <div class="num"><span id="cnt">0</span><small>країн</small></div>
+    <div class="flags" id="flags"></div>
+  </section>
   <section>
     <h2>Кадри з дороги</h2>
     <div class="grid">
-      <video src="media/t1.mp4" autoplay muted loop playsinline></video>
-      <video src="media/t2.mp4" autoplay muted loop playsinline></video>
-      <video src="media/t3.mp4" autoplay muted loop playsinline></video>
+      <figure><video data-src="media/p01.mp4" poster="media/p01.jpg" muted loop playsinline></video><figcaption>Коста-Бланка</figcaption></figure>
+      <figure><video data-src="media/p07.mp4" poster="media/p07.jpg" muted loop playsinline></video><figcaption>Єгипет</figcaption></figure>
+      <figure><video data-src="media/p04.mp4" poster="media/p04.jpg" muted loop playsinline></video><figcaption>Валенсія</figcaption></figure>
+      <figure><video data-src="media/p11.mp4" poster="media/p11.jpg" muted loop playsinline></video><figcaption>Гран-Канарія</figcaption></figure>
+      <figure><video data-src="media/p59.mp4" poster="media/p59.jpg" muted loop playsinline></video><figcaption>Крит</figcaption></figure>
+      <figure><video data-src="media/p10.mp4" poster="media/p10.jpg" muted loop playsinline></video><figcaption>Алгарве</figcaption></figure>
+      <figure><video data-src="media/p12.mp4" poster="media/p12.jpg" muted loop playsinline></video><figcaption>Гран-Канарія</figcaption></figure>
+      <figure><video data-src="media/p03.mp4" poster="media/p03.jpg" muted loop playsinline></video><figcaption>Коста-Бланка</figcaption></figure>
+      <figure><video data-src="media/p13.mp4" poster="media/p13.jpg" muted loop playsinline></video><figcaption>Гран-Канарія</figcaption></figure>
+      <figure><video data-src="media/p14.mp4" poster="media/p14.jpg" muted loop playsinline></video><figcaption>Маспаломас</figcaption></figure>
+      <figure><video data-src="media/p92.mp4" poster="media/p92.jpg" muted loop playsinline></video><figcaption>Бенідорм</figcaption></figure>
+      <figure><video data-src="media/p18.mp4" poster="media/p18.jpg" muted loop playsinline></video><figcaption>Гран-Канарія</figcaption></figure>
+      <figure><video data-src="media/t2.mp4" poster="media/t2.jpg" muted loop playsinline></video><figcaption>Гори</figcaption></figure>
+      <figure><video data-src="media/t3.mp4" poster="media/t3.jpg" muted loop playsinline></video><figcaption>Крит</figcaption></figure>
     </div>
   </section>
+  <section>
+    <h2>Карта поїздок</h2>
+    <p class="hint">Натисни на точку, щоб побачити кадр звідти</p>
+    <div class="map"><svg id="map" viewBox="0 0 460 420" role="img" aria-label="Карта поїздок"></svg></div>
+  </section>
+  <section class="brands">
+    <h2>Для брендів</h2>
+    <div class="stats">
+      <div><b>91.8K</b><span>переглядів найкращого відео</span></div>
+      <div><b>67K+</b><span>лайків у TikTok</span></div>
+      <div><b>1.1K</b><span>TikTok</span></div>
+      <div><b>580+</b><span>Instagram</span></div>
+    </div>
+    <p class="sub2">Знімаю подорожі, житло, кафе, дорогу і дрон. Вертикальні ролики для TikTok, Reels і Shorts.</p>
+    <a class="btn main" href="https://ig.me/m/alexdreamrise" target="_blank" rel="noopener">Написати в Instagram</a>
+  </section>
+  <div class="full" id="full" hidden><button aria-label="Закрити">✕</button><video playsinline loop muted></video><p></p></div>
   <footer>© alexdreamrise</footer>
 <script>
   // літери імені "піднімаються" по черзі
   const h = document.getElementById('name');
   h.innerHTML = [...h.textContent].map((c, i) => `<span style="animation-delay:${0.35 + i * 0.08}s">${c}</span>`).join('');
+  // ролики сітки вантажаться й грають лише коли видно на екрані (швидко з телефону)
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
+  }), { rootMargin: '200px' });
+  document.querySelectorAll('.grid video').forEach(v => io.observe(v));
+
+  // плитки з'являються знизу по черзі
+  const reveal = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); reveal.unobserve(e.target); }
+  }), { threshold: .15 });
+  document.querySelectorAll('.grid figure').forEach((f, i) => { f.style.transitionDelay = (i % 3) * .08 + 's'; reveal.observe(f); });
+
+  // ролик на весь екран
+  const full = document.getElementById('full'), fv = full.querySelector('video'), fp = full.querySelector('p');
+  function openFull(src, label) { fv.src = src; fp.textContent = label; full.hidden = false; fv.play().catch(() => {}); }
+  full.onclick = () => { full.hidden = true; fv.pause(); fv.removeAttribute('src'); };
+  document.querySelectorAll('.grid figure').forEach(f => f.onclick = () =>
+    openFull(f.querySelector('video').dataset.src, f.querySelector('figcaption').textContent));
+
+  // лічильник країн + прапори
+  const FLAGS = ['🇺🇦','🇩🇪','🇵🇱','🇨🇿','🇭🇷','🇮🇹','🇪🇸','🇮🇨','🇵🇹','🇬🇧','🇬🇷','🇪🇬'];
+  const fl = document.getElementById('flags');
+  fl.innerHTML = FLAGS.map(f => `<span>${f}</span>`).join('');
+  new IntersectionObserver((es, o) => es.forEach(e => {
+    if (!e.isIntersecting) return; o.disconnect();
+    let n = 0; const el = document.getElementById('cnt');
+    const t = setInterval(() => { el.textContent = ++n; fl.children[n - 1].classList.add('in'); if (n >= FLAGS.length) clearInterval(t); }, 110);
+  }), { threshold: .4 }).observe(document.querySelector('.count'));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+  // карта: країни, де був (підсвічені) + точки з кадрами
+  const BEEN = ['804','276','616','203','191','380','724','620','826','300','818'];
+  const PINS = [
+    { n:'Коста-Бланка', c:[0.19,38.73], v:'media/p01.mp4' },
+    { n:'Валенсія', c:[-0.38,39.47], v:'media/p04.mp4', dy:-8 },
+    { n:'Алгарве', c:[-8.67,37.09], v:'media/p10.mp4' },
+    { n:'Гран-Канарія', c:[-15.6,28.0], v:'media/p11.mp4' },
+    { n:'Крит', c:[24.19,35.4], v:'media/p59.mp4' },
+    { n:'Єгипет', c:[33.64,27.09], v:'media/p07.mp4' },
+  ];
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()).then(w => {
+    const svg = d3.select('#map');
+    const proj = d3.geoMercator().center([13.5, 41]).scale(400).translate([230, 210]);
+    const path = d3.geoPath(proj);
+    svg.append('g').selectAll('path').data(topojson.feature(w, w.objects.countries).features).join('path')
+      .attr('class', d => 'land' + (BEEN.includes(d.id) ? ' been' : '')).attr('d', path);
+    const g = svg.append('g').selectAll('g').data(PINS).join('g')
+      .attr('transform', d => `translate(${proj(d.c)})`).style('cursor', 'pointer')
+      .on('click', (e, d) => openFull(d.v, d.n));
+    g.append('circle').attr('class', 'ring').attr('r', 5);
+    g.append('circle').attr('class', 'pin').attr('r', 5);
+    g.append('text').attr('x', 8).attr('y', d => 4 + (d.dy || 0)).text(d => d.n);
+  }).catch(() => document.querySelector('.map').style.display = 'none');
 </script>
 </body>
 </html>
