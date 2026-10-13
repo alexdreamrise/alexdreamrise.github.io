@@ -69,7 +69,7 @@
   .full[hidden] { display:none }
   .full video { max-height:80svh; max-width:100%; border-radius:18px }
   .full p { margin-top:12px; font-weight:600 }
-  .full button { position:absolute; top:16px; right:16px; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--glass); color:#fff; font-size:18px }
+  .full button { z-index:6; position:absolute; top:calc(16px + env(safe-area-inset-top)); right:16px; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--glass); color:#fff; font-size:18px }
   .hero video, .hero img.poster { translate:var(--tx,0px) var(--ty,0px) }
   .full { background:#000 !important }
   .full .bar { position:absolute; left:0; right:0; height:11svh; background:#000; z-index:2; display:flex; align-items:center; justify-content:center }

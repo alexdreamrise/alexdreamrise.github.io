@@ -70,7 +70,7 @@
   .full[hidden] { display:none }
   .full video { max-height:80svh; max-width:100%; border-radius:18px }
   .full p { margin-top:12px; font-weight:600 }
-  .full button { position:absolute; top:16px; right:16px; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--glass); color:#fff; font-size:18px }
+  .full button { z-index:6; position:absolute; top:calc(16px + env(safe-area-inset-top)); right:16px; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--glass); color:#fff; font-size:18px }
   .hero video, .hero img.poster { translate:var(--tx,0px) var(--ty,0px) }
   .full { background:#000 !important }
   .full .bar { position:absolute; left:0; right:0; height:11svh; background:#000; z-index:2; display:flex; align-items:center; justify-content:center }
@@ -166,27 +166,9 @@
         <a class="btn" href="https://www.threads.com/@alexdreamrise" target="_blank" rel="noopener" style="animation-delay:1.3s">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 11.2c-.4-2.6-2.2-3.7-4.4-3.7-2.4 0-4 1.6-4 3.3 0 1.8 1.6 2.7 3.5 2.7 2.4 0 3.9-1.3 3.9-4.4 0-3.9-2.7-6.1-6-6.1C5.9 3 3.5 6.6 3.5 12s2.4 9 7.9 9c3.4 0 5.6-1.5 6.6-3.8"/></svg>
           Threads <small>@alexdreamrise</small></a>
-        <a class="btn soon" href="#" style="animation-delay:1.4s">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.3 2.9 11.5c-1 .4-1 1.6.1 1.9l4.7 1.5 1.8 5.6c.2.7 1.1.9 1.6.4l2.6-2.4 4.8 3.5c.6.4 1.4.1 1.6-.6l3.2-15.3c.2-.9-.7-1.6-1.6-1.3ZM9.8 14.6l8-7.2-9.8 6.1"/></svg>
-          Telegram <small>скоро</small></a>
       </nav>
     </div>
   </header>
-  <section class="ticket">
-    <div class="tk" id="tk">
-      <div class="tk-main">
-        <small>BOARDING PASS · ПОСАДКОВИЙ ТАЛОН</small>
-        <div class="tk-route"><b>UA</b><span>✈</span><b id="tkTo">PL</b></div>
-        <div class="tk-rows">
-          <div><small>ПАСАЖИР</small>ALEX</div>
-          <div><small>КУДИ</small><span id="tkPlace">ЗАКОПАНЕ</span></div>
-          <div><small>ДАТА</small><span id="tkDate">21 ЖОВ</span></div>
-          <div><small>МІСЦЕ</small>1A</div>
-        </div>
-      </div>
-      <div class="tk-stub"><div class="bars"></div><small>@alexdreamrise</small></div>
-    </div>
-  </section>
   <section class="count">
     <div class="road"><small>У дорозі</small><b id="road">…</b><small>між країнами, з лютого 2024</small></div>
     <div class="num"><span id="cnt">0</span><small>країн</small></div>
@@ -215,7 +197,7 @@
   </section>
   <section class="deckS">
     <h2>Колода кадрів</h2>
-    <p class="hint">Відсунь картку вбік, і з'явиться наступна. Натисни картку, щоб відкрити ролик</p>
+    <p class="hint">Відсунь картку вбік, і з'явиться наступна. Тапни картку, щоб гортати далі. На комп’ютері працюють стрілки ← →</p>
     <div class="deck" id="deck"></div>
     <div class="deck-btns"><button id="dNo" aria-label="Далі">✕</button><button id="dYes" aria-label="Подобається">♥</button></div>
   </section>
@@ -223,14 +205,6 @@
     <h2>Де я був</h2>
     <p class="hint">Тягни, щоб крутити. Двома пальцями наближай. Натисни точку, і відкриється кадр</p>
     <div class="map"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Глобус поїздок"></svg></div>
-  </section>
-  <section class="pass">
-    <h2>Паспорт мандрівника</h2>
-    <p class="hint">Натисни паспорт, щоб відкрити. Гортай сторінки вбік</p>
-    <div class="pp" id="pp">
-      <div class="pp-in"><div class="pp-pages" id="ppPages"></div></div>
-      <div class="pp-cover"><div class="pp-emb">★</div><b>ПАСПОРТ</b><span>PASSPORT</span><div class="pp-name">ALEX</div><small>подорожі · travel</small></div>
-    </div>
   </section>
   <section class="envS">
     <h2>Лист з дороги</h2>
@@ -414,14 +388,11 @@
     const out = () => { f.style.transform = ''; gl.style.opacity = 0; };
     f.addEventListener('pointermove', mv); f.addEventListener('pointerleave', out); f.addEventListener('pointerup', () => setTimeout(out, 250));
   });
-  // посадковий талон: легкий нахил
-  (function () { const t = document.getElementById('tk');
-    addEventListener('pointermove', e => { const r = t.getBoundingClientRect(); if (e.clientY < r.top - 80 || e.clientY > r.bottom + 80) { t.style.setProperty('--rx', '0deg'); t.style.setProperty('--ry', '0deg'); return; }
-      t.style.setProperty('--ry', ((e.clientX / innerWidth - .5) * 10) + 'deg'); t.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 8) + 'deg'); }); })();
+
   // колода кадрів (Tinder-стиль)
   (function () {
     const deck = document.getElementById('deck');
-    const items = [...document.querySelectorAll('.grid figure')].map(f => ({ poster: f.querySelector('video').getAttribute('poster'), src: f.querySelector('video').dataset.src, cap: f.querySelector('figcaption').textContent }));
+    const items = [{ poster: "media/d01.jpg", cap: "Коста-Бланка · Іспанія" },{ poster: "media/d02.jpg", cap: "Елафонісі · Крит" },{ poster: "media/d03.jpg", cap: "Захід · Крит" },{ poster: "media/d04.jpg", cap: "Гран-Канарія" },{ poster: "media/d05.jpg", cap: "Маспаломас · Канари" },{ poster: "media/d06.jpg", cap: "Малага · Іспанія" },{ poster: "media/d07.jpg", cap: "Бенідорм · Іспанія" },{ poster: "media/d08.jpg", cap: "Узбережжя · Крит" },{ poster: "media/d09.jpg", cap: "Пальма і захід · Крит" },{ poster: "media/d10.jpg", cap: "Захід · Гран-Канарія" }];
     let order = items.map((_, i) => i);
     function render() { deck.innerHTML = ''; order.slice(0, 4).reverse().forEach((idx, k, arr) => { const it = items[idx], top = k === arr.length - 1, depth = arr.length - 1 - k;
       const c = document.createElement('div'); c.className = 'dc'; c.dataset.i = idx;
@@ -432,23 +403,10 @@
     function bind(c) { let sx = 0, sy = 0, dx = 0, drag = false, moved = false;
       c.addEventListener('pointerdown', e => { drag = true; moved = false; sx = e.clientX; sy = e.clientY; c.classList.add('drag'); c.setPointerCapture(e.pointerId); });
       c.addEventListener('pointermove', e => { if (!drag) return; dx = e.clientX - sx; if (Math.abs(dx) > 6) moved = true; c.style.transform = `translate(${dx}px,${(e.clientY - sy) * .2}px) rotate(${dx / 14}deg)`; });
-      c.addEventListener('pointerup', () => { drag = false; c.classList.remove('drag'); if (Math.abs(dx) > 90) { next(dx > 0 ? 1 : -1); } else { c.style.transform = ''; if (!moved) { const it = items[+c.dataset.i]; openFull(it.src, it.cap); } } dx = 0; }); }
+      c.addEventListener('pointerup', () => { drag = false; c.classList.remove('drag'); if (Math.abs(dx) > 90) { next(dx > 0 ? 1 : -1); } else { c.style.transform = ''; if (!moved) { next(1); } } dx = 0; }); }
+    document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') next(-1); if (e.key === 'ArrowRight') next(1); });
     document.getElementById('dNo').onclick = () => next(-1); document.getElementById('dYes').onclick = () => next(1);
     render();
-  })();
-  // 3D-паспорт зі штампами (перший запис за GPS відео)
-  (function () {
-    const ST = [['🇺🇦','УКРАЇНА','02.09.2023','ВДОМА','#b3261e'],['🇩🇪','НІМЕЧЧИНА','03.02.2024','В\'ЇЗД','#1d4ed8'],['🇵🇱','ПОЛЬЩА','04.01.2025','В\'ЇЗД','#7a1fa2'],['🇪🇬','ЄГИПЕТ','21.02.2025','В\'ЇЗД','#0b7a4b'],
-      ['🇭🇷','ХОРВАТІЯ','27.06.2025','В\'ЇЗД','#b3261e'],['🇧🇦','БОСНІЯ','28.06.2025','В\'ЇЗД','#1d4ed8'],['🇸🇮','СЛОВЕНІЯ','01.07.2025','ТРАНЗИТ','#0b7a4b'],['🇮🇹','ІТАЛІЯ','01.07.2025','В\'ЇЗД','#7a1fa2'],
-      ['🇭🇺','УГОРЩИНА','17.07.2025','В\'ЇЗД','#b3261e'],['🇪🇸','ІСПАНІЯ','20.07.2025','В\'ЇЗД','#1d4ed8'],['🇨🇿','ЧЕХІЯ','10.08.2025','В\'ЇЗД','#0b7a4b'],['🇬🇷','ГРЕЦІЯ','02.09.2025','В\'ЇЗД','#7a1fa2'],
-      ['🇵🇹','ПОРТУГАЛІЯ','26.09.2025','В\'ЇЗД','#b3261e'],['🇮🇨','КАНАРИ','29.10.2025','В\'ЇЗД','#1d4ed8']];
-    const pg = document.getElementById('ppPages'); let h = '';
-    for (let p = 0; p < Math.ceil(ST.length / 4); p++) { h += `<div class="page" data-n="${p + 1}">` + ST.slice(p * 4, p * 4 + 4).map((x, i) => `<div class="stamp${(p + i) % 3 === 0 ? ' round' : ''}" style="--c:${x[4]};--r:${[-7, 5, -3, 8][i]}deg;--i:${i}"><b>${x[0]}</b><u>${x[1]}</u><small>${x[3]}</small><small>${x[2]}</small></div>`).join('') + '</div>'; }
-    pg.innerHTML = h;
-    const pp = document.getElementById('pp'); pp.querySelector('.pp-cover').onclick = () => { pp.classList.toggle('open'); };
-    const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && pp.classList.contains('open')) e.target.classList.add('in'); }), { root: pg, threshold: .6 });
-    pg.querySelectorAll('.page').forEach(p => io2.observe(p));
-    new MutationObserver(() => { if (pp.classList.contains('open')) setTimeout(() => pg.querySelector('.page').classList.add('in'), 700); }).observe(pp, { attributes: true, attributeFilter: ['class'] });
   })();
   // конверт з листівкою
   (function () { const e = document.getElementById('env');
