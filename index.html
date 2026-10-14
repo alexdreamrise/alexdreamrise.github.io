@@ -206,15 +206,6 @@
     <p class="hint">Тягни, щоб крутити. Двома пальцями наближай. Натисни точку, і відкриється кадр</p>
     <div class="map"><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Глобус поїздок"></svg></div>
   </section>
-  <section class="envS">
-    <h2>Лист з дороги</h2>
-    <p class="hint">Натисни конверт, потім листівку</p>
-    <div class="env" id="env">
-      <div class="env-card"><div class="face fr"><img src="media/p13.jpg" alt=""><span>Привіт з дороги</span></div>
-        <div class="face bk"><p>Привіт з дороги 👋</p><p>Тут я показую красиві місця такими, як вони є.</p><p>Підписуйся, щоб не пропустити, куди далі.</p><i>Alex</i></div></div>
-      <div class="env-front"></div><div class="env-flap"></div>
-    </div>
-  </section>
   <div class="full" id="full" hidden><div class="bar top"></div><video playsinline loop muted></video><div class="bar bot"><span id="fcap"></span></div><button aria-label="Закрити">✕</button></div>
   <footer>© alexdreamrise</footer>
 <script>
@@ -408,9 +399,6 @@
     document.getElementById('dNo').onclick = () => next(-1); document.getElementById('dYes').onclick = () => next(1);
     render();
   })();
-  // конверт з листівкою
-  (function () { const e = document.getElementById('env');
-    e.onclick = () => { if (!e.classList.contains('open')) e.classList.add('open'); else e.classList.toggle('flip'); }; })();
 </script>
 </body>
 </html>
